@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { EventsModule } from './events/events.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { EventsModule } from './events/events.module';
 
 @Module({
-  imports: [EventsModule],
   imports: [
     ConfigModule.forRoot(),
 
@@ -24,6 +23,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         synchronize: true,
       }),
     }),
+    EventsModule
   ],
   controllers: [AppController],
   providers: [AppService],

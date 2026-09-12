@@ -1,62 +1,86 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, Like, FindOptionsWhere } from 'typeorm';
+
+import { Event } from './entities/event.entity';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { FindEventsQueryDto } from './dto/find-events-query.dto';
-import { Event } from './event.entity';
 
 @Injectable()
 export class EventsService {
-  private events: Event[] = [];
-  private nextId = 1;
+  constructor(
+    @InjectRepository(Event)
+    private readonly eventRepository: Repository<Event>,
+  ) {}
 
   // GET /events?title=...&categoryId=...
-  findAll(query: FindEventsQueryDto): Event[] {
-    let result = [...this.events];
+  async findAll(query: FindEventsQueryDto): Promise<Event[]> {
+    const where: FindOptionsWhere<Event> = {};
 
     if (query.title) {
-      const q = query.title.toLowerCase();
-      result = result.filter((e) => e.title.toLowerCase().includes(q));
+      where.title = Like(`%${query.title}%`);
     }
 
     if (query.categoryId !== undefined) {
-      result = result.filter((e) => e.categoryId === query.categoryId);
+      where.category = { id: query.categoryId };
     }
 
-    return result;
+    return this.eventRepository.find({
+      where,
+      relations: ['category', 'user'],
+    });
   }
 
   // GET /events/:id
-  findOne(id: number): Event {
-    const event = this.events.find((e) => e.id === id);
+  async findOne(id: number): Promise<Event> {
+    const event = await this.eventRepository.findOne({
+      where: { id },
+      relations: ['category', 'user'],
+    });
+
     if (!event) {
       throw new NotFoundException(`Event with id ${id} not found`);
     }
+
     return event;
   }
 
   // POST /events
-  create(dto: CreateEventDto): Event {
-    const newEvent: Event = {
-      id: this.nextId++,
-      ...dto,
-    };
-    this.events.push(newEvent);
-    return newEvent;
+  async create(dto: CreateEventDto): Promise<Event> {
+    const { categoryId, ...rest } = dto;
+
+    const event = this.eventRepository.create({
+      ...rest,
+      category: { id: categoryId },
+    });
+
+    const saved = await this.eventRepository.save(event);
+
+    // Перезагрузка чтобы получит все category/user а не только { id }
+    return this.findOne(saved.id);
   }
 
   // PATCH /events/:id
-  update(id: number, dto: UpdateEventDto): Event {
-    const event = this.findOne(id);
-    Object.assign(event, dto);
-    return event;
+  async update(id: number, dto: UpdateEventDto): Promise<Event> {
+    const event = await this.findOne(id);
+
+    const { categoryId, ...rest } = dto;
+
+    Object.assign(event, rest);
+
+    if (categoryId !== undefined) {
+      event.category = { id: categoryId } as Event['category'];
+    }
+
+    await this.eventRepository.save(event);
+
+    return this.findOne(id);
   }
 
   // DELETE /events/:id
-  remove(id: number): void {
-    const index = this.events.findIndex((e) => e.id === id);
-    if (index === -1) {
-      throw new NotFoundException(`Event with id ${id} not found`);
-    }
-    this.events.splice(index, 1);
+  async remove(id: number): Promise<void> {
+    const event = await this.findOne(id);
+    await this.eventRepository.remove(event);
   }
 }
