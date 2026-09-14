@@ -2,6 +2,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Event } from 'src/events/entities/event.entity';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
 
+
 @Entity()
 export class Registration {
   @PrimaryGeneratedColumn()
@@ -15,4 +16,7 @@ export class Registration {
 
   @CreateDateColumn()
   createdAt!: Date;
+
+  @Column({ nullable: true })
+  comment?: string;
 }
