@@ -13,4 +13,11 @@ export class UsersService {
     const user = this.userRepository.create({ email, password, name });
     return this.userRepository.save(user);
     }
+  async findByEmail(email: string): Promise<User | null> {
+    return this.userRepository
+    .createQueryBuilder('user')
+    .addSelect('user.password')
+    .where('user.email = :email', { email })
+    .getOne();
+  }
 }

@@ -8,7 +8,9 @@ import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
 
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
