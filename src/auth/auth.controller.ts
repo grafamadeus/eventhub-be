@@ -1,17 +1,28 @@
+import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Controller, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('register')
+  @ApiOperation({ summary: 'Регистрация пользователя' })
+  @ApiResponse({ status: 201, description: 'Создан' })
+  @ApiResponse({ status: 409, description: 'Email занят' })
   register(@Body() dto: RegisterDto) {
     return this.authService.register(dto);
   }
+
   @Post('login')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Логин' })
+  @ApiResponse({ status: 200, description: 'Успех' })
+  @ApiResponse({ status: 401, description: 'Неверные данные' })
   login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
   }

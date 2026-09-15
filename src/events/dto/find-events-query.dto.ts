@@ -1,13 +1,15 @@
-import { IsString, IsOptional, IsNumber } from 'class-validator';
+import { IsString, IsOptional, IsNumber, isPositive, MaxLength } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class FindEventsQueryDto {
   @IsString()
   @IsOptional()
+  @MaxLength(200)
   title?: string;
 
   @IsNumber()
+  @IsPositive({})
   @IsOptional()
-  @Type(() => Number) // Превращает строку из query в число
+  @Type(() => Number) 
   categoryId?: number;
 }
