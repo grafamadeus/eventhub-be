@@ -14,7 +14,14 @@ export class AuthService {
 
   async register(dto: RegisterDto) {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
-    return this.usersService.create(dto.email, hashedPassword, dto.name);
+    const user = await this.usersService.create(dto.email, hashedPassword, dto.name);
+
+    const { password, ...userWithoutPassword } = user;
+
+    const payload = { sub: user.id, email: user.email };
+    const token = this.jwtService.sign(payload);
+
+    return { ...userWithoutPassword, access_token: token };
   }
   async login(dto: LoginDto) {
     const user = await this.usersService.findByEmail(dto.email);
@@ -27,8 +34,11 @@ export class AuthService {
       throw new UnauthorizedException('Неправильный логин или пароль');
     }
 
+    const { password, ...userWithoutPassword } = user;
+
     const payload = { sub: user.id, email: user.email };
     const token = this.jwtService.sign(payload);
-    return { access_token: token};
+
+    return { ...userWithoutPassword, access_token: token };
   }
 }
