@@ -16,4 +16,24 @@ export class CreateEventDto {
   @IsString()
   @IsNotEmpty()
   date: string;
+
+  @IsString()
+  @IsNotEmpty()
+  address: string;
+  
+  @IsString()
+  @IsNotEmpty()
+  location: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  price: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  capacity: number;
+
+  @IsString()
+  @IsNotEmpty()
+  coverUrl: string;
 }

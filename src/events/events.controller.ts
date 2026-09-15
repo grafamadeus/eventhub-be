@@ -3,6 +3,9 @@ import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { FindEventsQueryDto } from './dto/find-events-query.dto';
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CurrentUser } from 'src/auth/current-user.decorator';
 
 @Controller('events')
 export class EventsController {
@@ -19,8 +22,9 @@ export class EventsController {
   }
 
   @Post()
-  create(@Body() dto: CreateEventDto) {
-    return this.eventsService.create(dto);
+  @UseGuards(JwtAuthGuard)
+  create(@Body() dto: CreateEventDto, @CurrentUser() user: any) {
+    return this.eventsService.create(dto, user.userId);
   }
 
   @Patch(':id')
