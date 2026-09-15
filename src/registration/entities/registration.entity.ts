@@ -1,22 +1,27 @@
-import { User } from 'src/users/entities/user.entity';
-import { Event } from 'src/events/entities/event.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, Unique, Index,} from 'typeorm';
 
+import { User } from '../../users/entities/user.entity';
+import { Event } from '../../events/entities/event.entity';
 
-@Entity()
+@Entity('registrations')
+@Unique(['user', 'event'])
 export class Registration {
   @PrimaryGeneratedColumn()
-  id!: number;
+  id: number;
 
-  @ManyToOne(() => User)
-  user!: User;
+  @ManyToOne(() => User, { onDelete: 'CASCADE', nullable: false })
+  @JoinColumn({ name: 'user_id' })
+  @Index()
+  user: User;
 
-  @ManyToOne(() => Event)
-  event!: Event;
+  @ManyToOne(() => Event, { onDelete: 'CASCADE', nullable: false })
+  @JoinColumn({ name: 'event_id' })
+  @Index()
+  event: Event;
 
-  @CreateDateColumn()
-  createdAt!: Date;
-
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', length: 500, nullable: true })
   comment?: string;
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
 }

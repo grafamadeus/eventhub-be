@@ -28,7 +28,7 @@ export class EventsService {
 
     return this.eventRepository.find({
       where,
-      relations: ['category', 'user'],
+      relations: { category: true, user: true },
     });
   }
 
@@ -36,7 +36,7 @@ export class EventsService {
   async findOne(id: number): Promise<Event> {
     const event = await this.eventRepository.findOne({
       where: { id },
-      relations: ['category', 'user'],
+      relations: { category: true, user: true },
     });
 
     if (!event) {
@@ -47,17 +47,16 @@ export class EventsService {
   }
 
   // POST /events
-  async create(dto: CreateEventDto): Promise<Event> {
+  async create(dto: CreateEventDto, userId: number): Promise<Event> {
     const { categoryId, ...rest } = dto;
 
     const event = this.eventRepository.create({
       ...rest,
       category: { id: categoryId },
+      user: { id: userId},
     });
 
     const saved = await this.eventRepository.save(event);
-
-    // Перезагрузка чтобы получит все category/user а не только { id }
     return this.findOne(saved.id);
   }
 

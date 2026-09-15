@@ -29,6 +29,7 @@ export class CreateEventDto {
   @IsDateString()
   date: string;
 
+<<<<<<< HEAD
   @ApiPropertyOptional({ example: 'ул. Пушкина, д. 10' })
   @IsString()
   @IsOptional()
@@ -62,4 +63,25 @@ export class CreateEventDto {
   @IsNumber()
   @IsPositive()
   categoryId: number;
+=======
+  @IsString()
+  @IsNotEmpty()
+  address: string;
+  
+  @IsString()
+  @IsNotEmpty()
+  location: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  price: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  capacity: number;
+
+  @IsString()
+  @IsNotEmpty()
+  coverUrl: string;
+>>>>>>> 21238485fb7406051d4b9bb4687d4ebf9f1e410e
 }

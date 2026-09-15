@@ -9,5 +9,14 @@ export class LoginDto {
   @ApiProperty({ example: 'secret123', minLength: 6})
   @IsString()
   @MinLength(6)
+import { IsEmail, IsNotEmpty, IsString } from "class-validator";
+
+export class LoginDto {
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @IsString()
+  @IsNotEmpty()
   password: string;
 }

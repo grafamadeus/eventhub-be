@@ -25,8 +25,8 @@ export class Event {
   @Column()
   title!: string;
 
-  @Column()
-  description!: string;
+  @Column({nullable: true})
+  description?: string;
 
   @Column()
   date!: Date;
