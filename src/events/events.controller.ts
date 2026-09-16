@@ -1,6 +1,6 @@
 import {
   Controller, Get, Post, Patch, Delete, Param, Query, Body,
-  ParseIntPipe, HttpCode, HttpStatus,
+  ParseIntPipe, HttpCode, HttpStatus, UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth,
@@ -10,9 +10,9 @@ import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { FindEventsQueryDto } from './dto/find-events-query.dto';
-import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CurrentUser } from 'src/auth/current-user.decorator';
+import { CurrentUser } from '../auth/current-user.decorator';
+import { EventOwnershipGuard } from '../common/guards/event-ownership.guard';
 
 @ApiTags('events')
 @Controller('events')
@@ -37,21 +37,17 @@ export class EventsController {
   }
 
   @Post()
-<<<<<<< HEAD
-  @ApiOperation({ summary: 'Создать событие' })
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Создать событие' })
   @ApiResponse({ status: 201, description: 'Создано' })
   @ApiResponse({ status: 400, description: 'Ошибка валидации' })
-  create(@Body() dto: CreateEventDto) {
-    return this.eventsService.create(dto);
-=======
-  @UseGuards(JwtAuthGuard)
   create(@Body() dto: CreateEventDto, @CurrentUser() user: any) {
     return this.eventsService.create(dto, user.userId);
->>>>>>> 21238485fb7406051d4b9bb4687d4ebf9f1e410e
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard, EventOwnershipGuard)
   @ApiOperation({ summary: 'Обновить событие' })
   @ApiParam({ name: 'id', example: 1 })
   @ApiBearerAuth('access-token')
@@ -66,6 +62,7 @@ export class EventsController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, EventOwnershipGuard)
   @ApiOperation({ summary: 'Удалить событие' })
   @ApiParam({ name: 'id', example: 1 })
   @ApiBearerAuth('access-token')

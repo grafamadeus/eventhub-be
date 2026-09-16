@@ -29,59 +29,34 @@ export class CreateEventDto {
   @IsDateString()
   date: string;
 
-<<<<<<< HEAD
-  @ApiPropertyOptional({ example: 'ул. Пушкина, д. 10' })
+  @ApiProperty({ example: 'ул. Пушкина, д. 10' })
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   @MaxLength(300)
-  address?: string;
+  address: string;
 
-  @ApiPropertyOptional({ example: 'Москва' })
+  @ApiProperty({ example: 'Москва' })
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   @MaxLength(100)
-  location?: string;
+  location: string;
 
-  @ApiPropertyOptional({ example: 1500 })
+  @ApiProperty({ example: 1500 })
   @IsNumber()
   @Min(0)
-  @IsOptional()
-  price?: number;
+  price: number;
 
-  @ApiPropertyOptional({ example: 100 })
+  @ApiProperty({ example: 100 })
   @IsNumber()
   @IsPositive()
-  @IsOptional()
-  capacity?: number;
+  capacity: number;
 
-  @ApiPropertyOptional({ example: 'https://example.com/cover.jpg' })
+  @ApiProperty({ example: 'https://example.com/cover.jpg' })
   @IsUrl()
-  @IsOptional()
-  coverUrl?: string;
+  coverUrl: string;
 
   @ApiProperty({ example: 1 })
   @IsNumber()
   @IsPositive()
   categoryId: number;
-=======
-  @IsString()
-  @IsNotEmpty()
-  address: string;
-  
-  @IsString()
-  @IsNotEmpty()
-  location: string;
-
-  @IsNumber()
-  @IsNotEmpty()
-  price: number;
-
-  @IsNumber()
-  @IsNotEmpty()
-  capacity: number;
-
-  @IsString()
-  @IsNotEmpty()
-  coverUrl: string;
->>>>>>> 21238485fb7406051d4b9bb4687d4ebf9f1e410e
 }
