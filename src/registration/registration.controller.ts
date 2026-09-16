@@ -1,14 +1,21 @@
-import { Controller, Post, Param, UseGuards, ParseIntPipe, Delete } from '@nestjs/common';
+import { Controller, Post, Get, Delete, Param, UseGuards, ParseIntPipe } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiParam, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { RegistrationService } from './registration.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 
+@ApiTags('registrations')
 @Controller('events')
 export class RegistrationController {
   constructor(private registrationService: RegistrationService) {}
 
   @Post(':id/register')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Записаться на событие' })
+  @ApiParam({ name: 'id', example: 1 })
+  @ApiResponse({ status: 201, description: 'Записан' })
+  @ApiResponse({ status: 409, description: 'Уже записан или мест нет' })
   register(
     @Param('id', ParseIntPipe) eventId: number,
     @CurrentUser() user: any,
@@ -16,8 +23,21 @@ export class RegistrationController {
     return this.registrationService.register(eventId, user.userId);
   }
 
+  @Get(':id/registrations')
+  @ApiOperation({ summary: 'Список регистраций на событие' })
+  @ApiParam({ name: 'id', example: 1 })
+  @ApiResponse({ status: 200, description: 'Список регистраций' })
+  findAllByEvent(@Param('id', ParseIntPipe) eventId: number) {
+    return this.registrationService.findAllByEvent(eventId);
+  }
+
   @Delete(':id/unregister')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Отменить запись на событие' })
+  @ApiParam({ name: 'id', example: 1 })
+  @ApiResponse({ status: 200, description: 'Запись отменена' })
+  @ApiResponse({ status: 404, description: 'Регистрация не найдена' })
   unregister(
     @Param('id', ParseIntPipe) eventId: number,
     @CurrentUser() user: any,
