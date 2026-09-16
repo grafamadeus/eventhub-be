@@ -6,7 +6,7 @@ import { RegistrationService } from './registration.service';
 import { Event } from 'src/events/entities/event.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Registration, Event])],
+  imports: [TypeOrmModule.forFeature([Registration])],
   controllers: [RegistrationController],
   providers: [RegistrationService],
 })
