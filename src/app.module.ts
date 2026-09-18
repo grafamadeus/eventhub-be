@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { EventsModule } from './events/events.module';
 import { RegistrationModule } from './registration/registration.module';
+import { CategoryModule } from './categories/category.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { RegistrationModule } from './registration/registration.module';
     AuthModule,
     EventsModule,
     RegistrationModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
