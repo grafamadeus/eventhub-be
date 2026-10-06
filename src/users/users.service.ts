@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-
 import { User } from './entities/user.entity';
 import { Event } from '../events/entities/event.entity';
 import { Registration } from '../registration/entities/registration.entity';
+import { EventsService } from '../events/events.service';
 
 @Injectable()
 export class UsersService {
@@ -17,6 +17,8 @@ export class UsersService {
 
     @InjectRepository(Registration)
     private registrationRepository: Repository<Registration>,
+
+    private eventsService: EventsService,
   ) {}
 
   async create(email: string, password: string, name: string): Promise<User> {
@@ -40,19 +42,30 @@ export class UsersService {
     return user;
   }
 
-  async findMyEvents(userId: number): Promise<Event[]> {
-    return this.eventRepository.find({
+  async findMyEvents(userId: number) {
+    const events = await this.eventRepository.find({
       where: { user: { id: userId } },
       relations: { category: true, user: true },
       order: { date: 'ASC' },
     });
+
+    return this.eventsService.withRegistrationsCount(events);
   }
 
-  async findMyRegistrations(userId: number): Promise<Registration[]> {
-    return this.registrationRepository.find({
+  async findMyRegistrations(userId: number) {
+    const registrations = await this.registrationRepository.find({
       where: { user: { id: userId } },
       relations: { event: { category: true, user: true } },
       order: { createdAt: 'DESC' },
     });
+
+    const eventsWithCount = await this.eventsService.withRegistrationsCount(
+      registrations.map((r) => r.event),
+    );
+
+    return registrations.map((registration, index) => ({
+      ...registration,
+      event: eventsWithCount[index],
+    }));
   }
 }

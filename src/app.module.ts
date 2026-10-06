@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { EventsModule } from './events/events.module';
 import { RegistrationModule } from './registration/registration.module';
 import { CategoryModule } from './categories/category.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { CategoryModule } from './categories/category.module';
     EventsModule,
     RegistrationModule,
     CategoryModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],

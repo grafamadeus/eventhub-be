@@ -52,7 +52,7 @@ export class CreateEventDto {
   capacity: number;
 
   @ApiProperty({ example: 'https://example.com/cover.jpg' })
-  @IsUrl()
+  @IsUrl({ require_tld: false })
   coverUrl: string;
 
   @ApiProperty({ example: 1 })

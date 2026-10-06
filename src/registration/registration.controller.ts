@@ -3,6 +3,7 @@ import { ApiTags, ApiOperation, ApiParam, ApiResponse, ApiBearerAuth } from '@ne
 import { RegistrationService } from './registration.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
+import { EventOwnershipGuard } from '../common/guards/event-ownership.guard';
 
 @ApiTags('registrations')
 @Controller('events')
@@ -24,9 +25,12 @@ export class RegistrationController {
   }
 
   @Get(':id/registrations')
-  @ApiOperation({ summary: 'Список регистраций на событие' })
+  @UseGuards(JwtAuthGuard, EventOwnershipGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Список регистраций на событие (только владелец)' })
   @ApiParam({ name: 'id', example: 1 })
   @ApiResponse({ status: 200, description: 'Список регистраций' })
+  @ApiResponse({ status: 403, description: 'Не владелец' })
   findAllByEvent(@Param('id', ParseIntPipe) eventId: number) {
     return this.registrationService.findAllByEvent(eventId);
   }
